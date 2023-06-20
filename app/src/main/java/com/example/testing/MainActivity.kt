@@ -3,17 +3,22 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
@@ -32,15 +37,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyApplicationTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                Surface(
+                    modifier = Modifier
+                        .size(width = 375.dp, height = 667.dp),
+                ) {
                     LoginScreen()
                 }
             }
         }
     }
 }
-
 object AuthService {
     fun login(username: String, password: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
         val client = OkHttpClient()
@@ -99,39 +105,57 @@ fun LoginScreen() {
 
     Column(modifier = Modifier.padding(16.dp)) {
         // UserID field
-        TextField(
-            value = userID,
-            onValueChange = { value ->
-                userID = value
-                errorUserID = if (validateUserID(value)) "" else "Invalid UserID"
-            },
-            label = { Text("UserID") },
-            isError = errorUserID.isNotEmpty(),
-            singleLine = true
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TextField(
+                value = userID,
+                onValueChange = { value ->
+                    userID = value
+                    errorUserID = if (validateUserID(value)) "" else "Invalid UserID"
+                },
+                label = { Text(text = "UserID") },
+                isError = errorUserID.isNotEmpty(),
+                singleLine = true,
+                modifier = Modifier.weight(1f)
+            )
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = "UserID Info",
+                tint = Color.Gray,
+                modifier = Modifier.size(24.dp)
+            )
+        }
         if (errorUserID.isNotEmpty()) {
             Text(text = errorUserID, color = Color.Red)
         }
 
         // Password field
-        TextField(
-            value = password,
-            onValueChange = { value ->
-                password = value
-                errorPassword = if (validatePassword(value)) "" else "Invalid Password"
-            },
-            label = { Text("Password") },
-            isError = errorPassword.isNotEmpty(),
-            singleLine = true,
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            trailingIcon = {
-                Text(
-                    text = if (passwordVisible) "Hide" else "Show",
-                    modifier = Modifier.clickable { passwordVisible = !passwordVisible }
-                )
-            }
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TextField(
+                value = password,
+                onValueChange = { value ->
+                    password = value
+                    errorPassword = if (validatePassword(value)) "" else "Invalid Password"
+                },
+                label = { Text("Password") },
+                isError = errorPassword.isNotEmpty(),
+                singleLine = true,
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                trailingIcon = {
+                    Text(
+                        text = if (passwordVisible) "Hide" else "Show",
+                        modifier = Modifier.clickable { passwordVisible = !passwordVisible }
+                    )
+                },
+                modifier = Modifier.weight(1f)
+            )
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = "Password Info",
+                tint = Color.Gray,
+                modifier = Modifier.size(24.dp)
+            )
+        }
         if (errorPassword.isNotEmpty()) {
             Text(text = errorPassword, color = Color.Red)
         }
@@ -156,23 +180,21 @@ fun LoginScreen() {
                     showErrorDialogState.value = true
                 }
             },
-            enabled = userID.isNotEmpty() && password.isNotEmpty()
+            enabled = userID.isNotEmpty() && password.isNotEmpty(),
         ) {
             Text("Login")
         }
     }
 
-    // TODO
-    // Language Button
-        // make a drop down button
-        // it should have the ability for english and greek
-        // if it is in greek change the words and vice versa
+    // TODO: Language Button
+
+    // TODO: Info icon implement dimming
+
     if (showErrorDialogState.value) {
         ShowErrorDialog {
             showErrorDialogState.value = false
         }
     }
-
 }
 
 @Composable
@@ -196,6 +218,15 @@ fun MyApplicationTheme(content: @Composable () -> Unit) {
     MaterialTheme {
         content()
     }
+       // colorScheme = darkColorScheme(
+         //   primary = Color.Green,
+           // secondary = Color.Green,
+            //error = Color.Red
+        //),
+        //typography = MaterialTheme.typography,
+       // shapes = MaterialTheme.shapes,
+       // content = content
+
 }
 
 @Preview(showBackground = true)
